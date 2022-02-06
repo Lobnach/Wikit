@@ -1,0 +1,143 @@
+openapi: 3.0.0
+servers:
+  - url: http://localhost:3000
+    description: Server localhost
+info:
+  description: |
+    This is a sample for a Tweet API.
+    The purpose is to develop the API server in JavaScript from this documentation.
+    The server has to listen the port 3000.
+  version: "1.0.0"
+  title: Simple Tweet API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: tweets
+paths:
+  /tweets:
+    post:
+      tags:
+        - tweets
+      summary: adds a tweet
+      operationId: addTweet
+      description: Adds a tweet to the system
+      responses:
+        '201':
+          description: tweet created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tweet'
+        '400':
+          description: 'invalid input, tweet invalid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TweetData'
+        description: tweet item to add
+    get:
+      tags:
+        - tweets
+      summary: searches tweets
+      operationId: searchTweets
+      description: By passing in the appropriate options, you can search for tweets by author's name
+      parameters:
+        - in: query
+          name: authorName
+          description: pass the search string for looking up tweets published by author's name
+          required: true
+          example: stefan
+          schema:
+            type: string
+        - in: query
+          name: skip
+          description: number of tweets to skip for pagination
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
+        - in: query
+          name: limit
+          description: maximum number of tweets to return
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 10
+            default: 0
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tweet'
+        '400':
+          description: bad input parameter
+  /tweets/{tweetId}:
+    get:
+      tags:
+        - tweets
+      summary: gets tweet details
+      operationId: getTweet
+      description: Get the tweet's details and its retweets
+      parameters:
+        - in: path
+          name: tweetId
+          description: Tweet Id
+          example: 1
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: tweet's details and its retweets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tweet'
+        '404':
+          description: 'tweet not found'
+components:
+  schemas:
+    TweetData:
+      type: object
+      required:
+        - date
+        - authorName
+        - content
+      properties:
+        date:
+          type: string
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        authorName:
+          type: string
+          example: stefan
+          description: author's name
+        content:
+          type: string
+          example: J'adore Wikit !!! <3
+          maxLength: 200
+          description: tweet's content limited to 200 characters
+    Tweet:
+      allOf:
+        - $ref: '#/components/schemas/TweetData'
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: string
+              format: number
+              example: 1
+              description: auto-generated id
