@@ -17,7 +17,7 @@ const start = async () => {
     try {
         await connect();
         app.listen(port, () => {
-            console.log('Server running on port '+port);
+        console.log('Server running on port '+port);
         });
     } catch(error) {
         console.log(error);
@@ -25,6 +25,8 @@ const start = async () => {
 }
 
 start();
+module.exports = app;
+
 
 
 
