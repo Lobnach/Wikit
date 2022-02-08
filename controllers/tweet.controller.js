@@ -7,7 +7,7 @@ const createTweet = async (req, res) => {
 }
 
 const getAllTweets = async (req, res) =>  {
-    const name = req.query.name;
+    const name = req.query.authorName;
     const offset = req.query.skip;
     const limit = req.query.limit;
     const tweets = await tweetService.getAllTweets(name, offset, limit);
